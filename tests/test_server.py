@@ -142,3 +142,27 @@ async def test_server_lists_web_search_tool() -> None:
     # Schema sanity: query, lang, page are exposed.
     props = tool.inputSchema.get("properties", {})
     assert {"query", "lang", "page"} <= set(props)
+
+
+@pytest.mark.asyncio
+async def test_web_search_tool_uses_default_client(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Regression: build_server() with no injected client must lazy-build one
+    whose .search() is callable. Previously the lazy singleton shadowed the
+    factory and returned a function object, blowing up with
+    "'function' object has no attribute 'search'".
+    """
+    from scouts_ai_mcp import server as server_mod
+
+    monkeypatch.setenv("SCOUTS_AI_BASE_URL", "https://scouts-ai.test")
+    server_mod._reset_default_client_for_tests()
+    try:
+        server = build_server()  # no client= → must use default
+        with respx.mock(base_url="https://scouts-ai.test") as mock:
+            mock.get("/api/search").mock(return_value=httpx.Response(200, json=PAYLOAD))
+            async with Client(server) as c:
+                result = await c.call_tool("web_search", {"query": "hello"})
+        assert result.structured_content is not None
+        # Upstream echoes the normalized form in PAYLOAD.
+        assert result.structured_content["query"] == PAYLOAD["query"]
+    finally:
+        server_mod._reset_default_client_for_tests()

@@ -86,7 +86,7 @@ def build_server(client: ScoutsAiClient | None = None) -> FastMCP:
         Raises:
             ToolError: If the upstream returns a non-2xx response or the request fails.
         """
-        c = client or _default_client()
+        c = client or _get_default_client()
         try:
             response = c.search(query, lang=lang, page=page)
         except InvalidQueryError as exc:
@@ -130,14 +130,20 @@ def build_server(client: ScoutsAiClient | None = None) -> FastMCP:
 # ----------------------------------------------------------------- default client
 
 
-_default_client: ScoutsAiClient | None = None
+_default_client_instance: ScoutsAiClient | None = None
 
 
-def _default_client() -> ScoutsAiClient:
-    global _default_client
-    if _default_client is None:
-        _default_client = ScoutsAiClient()
-    return _default_client
+def _get_default_client() -> ScoutsAiClient:
+    global _default_client_instance
+    if _default_client_instance is None:
+        _default_client_instance = ScoutsAiClient()
+    return _default_client_instance
+
+
+def _reset_default_client_for_tests() -> None:
+    """Test hook: drop the cached default client so a fresh one is built next call."""
+    global _default_client_instance
+    _default_client_instance = None
 
 
 # ----------------------------------------------------------------- CLI entrypoint
