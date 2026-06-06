@@ -101,6 +101,53 @@ pip install -e ".[dev]"
 pytest
 ```
 
+## Publishing to PyPI
+
+One-time setup, then publish in three commands.
+
+### 1. Create a PyPI account
+
+- Register at [pypi.org/account/register](https://pypi.org/account/register/).
+- Account settings → **Add 2FA** (required for uploads; TOTP authenticator or WebAuthn).
+- Account settings → **API tokens** → **Add API token**.
+  - Name: `scouts-ai-mcp`
+  - Scope: `Entire account` (or limit to the project after first upload)
+  - Copy the token (`pypi-...`) — shown only once.
+
+Verify the project name is free: open `https://pypi.org/project/scouts-ai-mcp/`
+(404 = available).
+
+### 2. Install publishing tools
+
+```bash
+pip install build twine
+```
+
+### 3. Build and upload
+
+```bash
+python -m build
+python -m twine upload dist/*
+```
+
+- Username: `__token__`
+- Password: your `pypi-...` API token
+
+For subsequent releases: bump `version` in `pyproject.toml`, then repeat step 3.
+
+### Optional: automate via GitHub Actions (Trusted Publishing)
+
+Recommended for long-term maintenance — no API token in CI.
+
+1. PyPI → Project → Publishing → Add a new pending publisher:
+   - Owner: `scouts-ai`
+   - Repository: `scouts-ai-mcp`
+   - Workflow filename: `release.yml`
+   - Environment name: `pypi`
+2. Add `.github/workflows/release.yml` that runs `python -m build && python -m twine publish-dist`
+   on tag push (`v*`).
+3. Cut a release: `git tag v0.1.0 && git push --tags`.
+
 ## License
 
 MIT — see [LICENSE](./LICENSE).
