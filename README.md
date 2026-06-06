@@ -103,4 +103,4 @@ pytest
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT — see [LICENSE](https://github.com/kecven/scouts-ai-mcp/blob/main/LICENSE).
