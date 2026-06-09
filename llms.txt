@@ -1,0 +1,52 @@
+# scouts-ai-mcp
+
+> No-key web search API for AI agents, exposed as a single MCP tool.
+
+## What it is
+A Model Context Protocol (MCP) server that wraps the [SCOUTS-AI](https://scouts-ai.com) public web search endpoint (`GET https://scouts-ai.com/api/search`) and exposes a single `web_search` tool to any MCP-compatible host.
+
+## Install
+
+```bash
+pip install scouts-ai-mcp
+```
+
+## Run (stdio transport)
+
+```bash
+scouts-ai-mcp
+```
+
+## Wire into a host (Claude Desktop example)
+
+```json
+{
+  "mcpServers": {
+    "scouts-ai": {
+      "command": "scouts-ai-mcp"
+    }
+  }
+}
+```
+
+## Tool: `web_search`
+
+| Parameter | Type   | Default | Description                                |
+| --------- | ------ | ------- | ------------------------------------------ |
+| `query`   | string | —       | Search query, 1–512 chars.                 |
+| `lang`    | string | `en`    | BCP-47 language code (e.g. `en`, `en-US`).  |
+| `page`    | int    | `1`     | 1-based page number, 1–10.                 |
+
+## Verified endpoint behaviour
+- Base URL: `https://scouts-ai.com`
+- Method: `GET /api/search?q=...&lang=...&page=...`
+- Auth: **none** (public, no-key endpoint)
+- Rate limit: 60 requests / minute (HTTP `x-ratelimit-*` headers)
+- Response shape: `{ query, lang, page, pageSize, cached, tookMs, results: [{ title, url, content, publishedAt, engine }] }`
+- Typical latency: 400–900 ms (observed 821 ms on a fresh uncached query, 2026-06-09)
+
+## Project home
+- Project home: https://scouts-ai.com
+- GitHub: https://github.com/kecven/scouts-ai-mcp
+- PyPI: https://pypi.org/project/scouts-ai-mcp/
+- License: MIT

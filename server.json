@@ -1,0 +1,88 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.kecven/scouts-ai-mcp",
+  "version": "0.1.5",
+  "description": "No-key web search API for AI agents. Single web_search tool backed by https://scouts-ai.com. Drop-in for Claude Desktop, Cursor, Open WebUI, Continue, Cline.",
+  "repository": {
+    "url": "https://github.com/kecven/scouts-ai-mcp",
+    "source": "github"
+  },
+  "homepage": "https://scouts-ai.com",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "web-search",
+    "ai-agent",
+    "llm",
+    "rag",
+    "answer-engine",
+    "no-api-key",
+    "open-source"
+  ],
+  "categories": [
+    "search",
+    "developer-tools",
+    "ai-infrastructure"
+  ],
+  "icons": [
+    "https://scouts-ai.com/favicon.ico"
+  ],
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "scouts-ai-mcp",
+      "version": "0.1.5",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": []
+    },
+    {
+      "registryType": "pypi",
+      "identifier": "scouts-ai-mcp",
+      "version": "0.1.5",
+      "transport": {
+        "type": "http",
+        "url": "http://127.0.0.1:8765"
+      },
+      "environmentVariables": [
+        {
+          "description": "SCOUTS-AI API base URL. Defaults to the public no-key endpoint.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false,
+          "name": "SCOUTS_AI_BASE_URL"
+        },
+        {
+          "description": "HTTP timeout in seconds (0.1–60).",
+          "isRequired": false,
+          "format": "number",
+          "isSecret": false,
+          "name": "SCOUTS_AI_TIMEOUT_S"
+        },
+        {
+          "description": "User-Agent header sent to the API.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false,
+          "name": "SCOUTS_AI_USER_AGENT"
+        },
+        {
+          "description": "Default BCP-47 language code for queries that omit one.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false,
+          "name": "SCOUTS_AI_DEFAULT_LANG"
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "tool": "scouts-ai-launcher",
+      "version": "1.0.0",
+      "notes": "No API key required for default deployment. Verified at submission: GET /api/search returns 200 in ~820ms, rate limit 60/min, no-key."
+    }
+  }
+}

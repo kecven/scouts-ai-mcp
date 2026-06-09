@@ -1,0 +1,36 @@
+{
+  "$schema": "https://agents.json/schema/v1.json",
+  "name": "scouts-ai-mcp",
+  "version": "0.1.5",
+  "description": "No-key web search API for AI agents. Single web_search tool backed by https://scouts-ai.com.",
+  "homepage": "https://scouts-ai.com",
+  "repository": "https://github.com/kecven/scouts-ai-mcp",
+  "license": "MIT",
+  "transport": ["stdio", "http"],
+  "install": {
+    "pypi": "pip install scouts-ai-mcp",
+    "entrypoint": "scouts-ai-mcp"
+  },
+  "tools": [
+    {
+      "name": "web_search",
+      "description": "Web search via the SCOUTS-AI public, no-key API. Returns a compact JSON list of results (title, url, content, publishedAt, engine). Useful for grounding LLM answers, agentic research, GEO workflows, and answer engines that need fresh web data without bringing their own search index.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string", "minLength": 1, "maxLength": 512, "description": "Search query." },
+          "lang":  { "type": "string", "default": "en", "description": "BCP-47 language code." },
+          "page":  { "type": "integer", "minimum": 1, "maximum": 10, "default": 1, "description": "1-based page number." }
+        },
+        "required": ["query"]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    }
+  ],
+  "tags": ["mcp", "model-context-protocol", "web-search", "ai-agent", "llm", "rag", "answer-engine", "no-api-key", "open-source"]
+}
