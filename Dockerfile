@@ -1,6 +1,9 @@
 # scouts-ai-mcp Dockerfile
-# Used by Glama's automated sandbox build (Firecracker microVM).
-# Build context = repo root.
+# Used by Glama's automated sandbox build (Firecracker microVM). Build
+# context = this directory (`scouts-ai-mcp/`).
+#
+# For in-network Compose deployment, see `scouts-ai-backend/Dockerfile.mcp`,
+# which expects the monorepo root as build context.
 
 FROM python:3.11-slim
 

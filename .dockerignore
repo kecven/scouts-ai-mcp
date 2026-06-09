@@ -1,0 +1,39 @@
+# Build context for the public scouts-ai-mcp image.
+# Keep the build context small: only the package source and metadata.
+
+# Local Python / build state
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+
+# Test infra that should not ship
+tests/
+
+# Build / dist artefacts
+dist/
+build/
+*.egg-info/
+
+# Editor / OS / VCS noise
+.idea/
+.vscode/
+.DS_Store
+.git/
+.gitignore
+.gitattributes
+.opencode/
+
+# CI config (lives at the repo root, never inside the package)
+.github/
+
+# Compose-only Dockerfiles (Glama uses ./Dockerfile, compose uses ./Dockerfile.compose)
+Dockerfile.compose
+
+# Lock files we don't yet produce
+uv.lock
+poetry.lock
+Pipfile.lock

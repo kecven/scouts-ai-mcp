@@ -1,0 +1,85 @@
+# Public image: kecven/scouts-ai-mcp on Docker Hub.
+# Build context: this directory (`scouts-ai-mcp/`).
+#
+# Multi-arch: built with `docker buildx` for linux/amd64 + linux/arm64.
+#
+# Defaults baked in:
+#   transport: http
+#   host:      0.0.0.0
+#   port:      8765
+#   log level: INFO
+#   base url:  https://scouts-ai.com  (SCOUTS_AI_BASE_URL, override per service)
+#
+# To rebuild and push:
+#   docker buildx build \
+#     --platform linux/amd64,linux/arm64 \
+#     -f Dockerfile.hosted \
+#     -t kecven/scouts-ai-mcp:0.1.5 \
+#     -t kecven/scouts-ai-mcp:0.1 \
+#     -t kecven/scouts-ai-mcp:latest \
+#     --push .
+#
+# To run locally:
+#   docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.5
+#
+# To override the upstream API base URL:
+#   docker run --rm -p 8765:8765 \
+#     -e SCOUTS_AI_BASE_URL=https://scouts-ai.com \
+#     kecven/scouts-ai-mcp:0.1.5
+#
+# To override CLI args (the trailing args are appended to the ENTRYPOINT):
+#   docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.5 --log-level=DEBUG
+
+FROM python:3.11-slim-bookworm
+
+# Build-time metadata. The `version`/`revision`/`created` labels are
+# usually overwritten by `docker buildx imagetools create` / CI to inject
+# the real git SHA and build timestamp. The placeholders here are
+# intentional defaults that the CI / local build can override via
+# `--label=org.opencontainers.image.revision=<sha>`.
+ARG MCP_VERSION=0.1.5
+ARG GIT_REVISION=unknown
+ARG BUILD_DATE=09.06.2026
+
+LABEL org.opencontainers.image.title="scouts-ai-mcp" \
+      org.opencontainers.image.description="MCP server exposing the SCOUTS-AI web search API as a single web_search tool for AI agents." \
+      org.opencontainers.image.source="https://github.com/kecven/scouts-ai-mcp" \
+      org.opencontainers.image.homepage="https://scouts-ai.com" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.documentation="https://github.com/kecven/scouts-ai-mcp#docker" \
+      org.opencontainers.image.version="${MCP_VERSION}" \
+      org.opencontainers.image.revision="${GIT_REVISION}" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.vendor="SCOUTS-AI"
+
+# Create a non-root user.
+RUN groupadd --system --gid 1001 scouts && \
+    useradd  --system --uid 1001 --gid scouts --create-home --shell /usr/sbin/nologin scouts
+
+WORKDIR /app
+
+# Install dependencies first for better layer caching.
+COPY pyproject.toml README.md LICENSE ./
+COPY src ./src
+
+# No pip cache, no cache mounts. Strip bytecode files to keep the image
+# small and skip the wheel builds.
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --no-compile .
+
+# Drop privileges.
+USER scouts
+
+# MCP streamable HTTP transport. FastMCP's default endpoint path is `/mcp`,
+# which is what MCP clients expect when pointed at the container's root.
+EXPOSE 8765
+
+# We cannot use a GET-based healthcheck because the FastMCP streamable
+# HTTP endpoint does not return 200 on plain GET. A TCP-level check is the
+# safest signal that uvicorn is bound and accepting connections; the
+# application layer does the protocol check.
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=5 \
+  CMD python -c "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('127.0.0.1',8765))==0 else 1)"
+
+ENTRYPOINT ["scouts-ai-mcp"]
+CMD ["--transport=http", "--host=0.0.0.0", "--port=8765", "--log-level=INFO"]

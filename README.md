@@ -39,6 +39,60 @@ For remote MCP hosts and self-hosted bridges:
 scouts-ai-mcp --transport http --host 127.0.0.1 --port 8765
 ```
 
+## Run (Docker)
+
+A multi-arch (`linux/amd64` + `linux/arm64`) image is published to Docker
+Hub as [`kecven/scouts-ai-mcp`](https://hub.docker.com/r/kecven/scouts-ai-mcp).
+It runs the MCP server in streamable HTTP mode on port `8765` and exposes
+the `web_search` tool at `http://localhost:8765/mcp`. No API key, no
+external dependencies.
+
+Quick start:
+
+```bash
+docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.5
+```
+
+Then point any streamable-HTTP MCP host at `http://localhost:8765/mcp`
+(or, when run behind a public proxy, `https://<your-host>/mcp`).
+
+Override the upstream API base URL:
+
+```bash
+docker run --rm -p 8765:8765 \
+  -e SCOUTS_AI_BASE_URL=https://scouts-ai.com \
+  kecven/scouts-ai-mcp:0.1.5
+```
+
+Append CLI args (the image entrypoint is `scouts-ai-mcp`):
+
+```bash
+docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.5 --log-level=DEBUG
+```
+
+Available tags:
+
+- `kecven/scouts-ai-mcp:0.1.5` — pinned, recommended for production.
+- `kecven/scouts-ai-mcp:0.1` — minor-version rolling tag.
+- `kecven/scouts-ai-mcp:latest` — latest stable release.
+
+Build and push locally (requires `docker buildx`):
+
+```bash
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -f Dockerfile.hosted \
+  -t kecven/scouts-ai-mcp:0.1.5 \
+  -t kecven/scouts-ai-mcp:0.1 \
+  -t kecven/scouts-ai-mcp:latest \
+  --push .
+```
+
+The image runs as a non-root user (`scouts`, uid 1001) and includes a
+TCP-level `HEALTHCHECK` on `127.0.0.1:8765` (the streamable HTTP
+endpoint does not return `200` on plain GET, so an HTTP probe would be
+unreliable).
+
 ## Tool: `web_search`
 
 | Parameter | Type   | Default | Description                                  |
