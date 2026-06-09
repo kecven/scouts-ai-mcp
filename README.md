@@ -86,7 +86,7 @@ All settings are environment variables. Defaults match the public SCOUTS-AI depl
 | -------------------------- | ------------------------ | ---------------------------------------- |
 | `SCOUTS_AI_BASE_URL`       | `https://scouts-ai.com`  | Base URL of the SCOUTS-AI API.           |
 | `SCOUTS_AI_TIMEOUT_S`      | `5.0`                    | HTTP timeout in seconds (0.1–60).        |
-| `SCOUTS_AI_USER_AGENT`     | `scouts-ai-mcp/0.1.4`    | User-Agent header.                       |
+| `SCOUTS_AI_USER_AGENT`     | `scouts-ai-mcp/0.1.5`    | User-Agent header.                       |
 | `SCOUTS_AI_DEFAULT_LANG`   | `en`                     | Default `lang` when the tool omits it.   |
 | `SCOUTS_AI_MAX_QUERY_LENGTH` | `512`                  | Reject queries longer than this.         |
 | `SCOUTS_AI_MAX_PAGE`       | `10`                     | Reject page numbers above this.          |
@@ -94,7 +94,7 @@ All settings are environment variables. Defaults match the public SCOUTS-AI depl
 ## Development
 
 ```bash
-git clone https://github.com/scouts-ai/scouts-ai-mcp.git
+git clone https://github.com/kecven/scouts-ai-mcp.git
 cd scouts-ai-mcp
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"

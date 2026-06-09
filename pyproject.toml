@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scouts-ai-mcp"
-version = "0.1.4"
+version = "0.1.5"
 description = "MCP server exposing the SCOUTS-AI web search API as a single web_search tool for AI agents."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -45,8 +45,8 @@ scouts-ai-mcp = "scouts_ai_mcp.server:main"
 [project.urls]
 Homepage = "https://scouts-ai.com/"
 Documentation = "https://scouts-ai.com/llms.txt"
-Issues = "https://github.com/scouts-ai/scouts-ai-mcp/issues"
-Source = "https://github.com/scouts-ai/scouts-ai-mcp"
+Issues = "https://github.com/kecven/scouts-ai-mcp/issues"
+Source = "https://github.com/kecven/scouts-ai-mcp"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/scouts_ai_mcp"]
