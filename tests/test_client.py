@@ -78,6 +78,25 @@ def test_search_uses_default_lang_and_page(client: object) -> None:
     assert "page=1" in qs
 
 
+# -------------------------------------------------------------- internal token
+
+
+def test_internal_token_is_sent_when_configured(trusted_client: object) -> None:
+    with respx.mock(base_url="https://scouts-ai.test") as mock:
+        route = mock.get("/api/search").mock(return_value=httpx.Response(200, json=PAYLOAD))
+        trusted_client.search("hello")  # type: ignore[attr-defined]
+    assert route.calls.last.request.headers.get("X-Internal-Token") == "shared-secret-xyz"
+
+
+def test_internal_token_is_absent_when_unset(client: object) -> None:
+    with respx.mock(base_url="https://scouts-ai.test") as mock:
+        route = mock.get("/api/search").mock(return_value=httpx.Response(200, json=PAYLOAD))
+        client.search("hello")  # type: ignore[attr-defined]
+    assert route.calls.last.request.headers.get("X-Internal-Token") is None
+
+
+
+
 # ------------------------------------------------------------------ validation
 
 

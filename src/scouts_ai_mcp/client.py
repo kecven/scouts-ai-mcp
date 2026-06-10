@@ -93,10 +93,11 @@ class ScoutsAiClient:
     def __init__(self, config: Config | None = None, *, http_client: httpx.Client | None = None) -> None:
         self._config = config or Config.from_env()
         self._owns_client = http_client is None
+        base_headers = {"User-Agent": self._config.user_agent, "Accept": "application/json"}
         self._http = http_client or httpx.Client(
             base_url=self._config.base_url,
             timeout=httpx.Timeout(self._config.timeout_s),
-            headers={"User-Agent": self._config.user_agent, "Accept": "application/json"},
+            headers=base_headers,
         )
 
     def __enter__(self) -> "ScoutsAiClient":
@@ -121,10 +122,20 @@ class ScoutsAiClient:
         effective_lang = self._validate_lang(lang or self._config.default_lang)
         effective_page = self._validate_page(page)
 
+        # Apply config-derived headers per request so a caller-injected
+        # `httpx.Client` (which may not carry them) still sends the
+        # trusted-internal token. `X-Internal-Token` is omitted entirely
+        # when the env var is empty — verified server-side by the Spring
+        # rate-limit interceptor.
+        request_headers: dict[str, str] = {}
+        if self._config.internal_token:
+            request_headers["X-Internal-Token"] = self._config.internal_token
+
         try:
             response = self._http.get(
                 "/api/search",
                 params={"q": q, "lang": effective_lang, "page": str(effective_page)},
+                headers=request_headers or None,
             )
         except httpx.TimeoutException as exc:
             raise UpstreamUnavailableError(

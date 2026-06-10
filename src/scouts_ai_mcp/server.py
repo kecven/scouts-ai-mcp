@@ -190,7 +190,13 @@ def main(argv: list[str] | None = None) -> None:
         return
     if args.print_config:
         cfg = Config.from_env()
-        print(json.dumps(cfg.__dict__, indent=2))
+        # Redact secrets so `internal_token` never lands in logs or shared
+        # terminals. `None` (env unset) is the safe default; when set we
+        # show a fingerprint-style placeholder so the operator can confirm
+        # the value was loaded without exposing it.
+        view = dict(cfg.__dict__)
+        view["internal_token"] = "<set, redacted>" if cfg.internal_token else None
+        print(json.dumps(view, indent=2))
         return
 
     server = build_server()

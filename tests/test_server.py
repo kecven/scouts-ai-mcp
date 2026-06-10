@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import httpx
 import pytest
 import respx
@@ -166,3 +168,32 @@ async def test_web_search_tool_uses_default_client(monkeypatch: pytest.MonkeyPat
         assert result.structured_content["query"] == PAYLOAD["query"]
     finally:
         server_mod._reset_default_client_for_tests()
+
+
+# -------------------------------------------------------------- print-config
+
+
+def test_print_config_redacts_internal_token(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    """`--print-config` must never leak the shared secret to the terminal."""
+    import scouts_ai_mcp.server as server_mod
+
+    monkeypatch.setenv("SCOUTS_AI_BASE_URL", "https://scouts-ai.test")
+    monkeypatch.setenv("SCOUTS_AI_INTERNAL_TOKEN", "super-secret-shared-token")
+    # main() is the entrypoint invoked by argparse.
+    server_mod.main(["--print-config"])
+    out = capsys.readouterr().out
+    payload = json.loads(out)
+    assert payload["internal_token"] == "<set, redacted>"
+    assert "super-secret-shared-token" not in out
+
+
+def test_print_config_shows_none_when_internal_token_unset(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    import scouts_ai_mcp.server as server_mod
+
+    monkeypatch.delenv("SCOUTS_AI_INTERNAL_TOKEN", raising=False)
+    server_mod.main(["--print-config"])
+    out = capsys.readouterr().out
+    payload = json.loads(out)
+    assert payload["internal_token"] is None

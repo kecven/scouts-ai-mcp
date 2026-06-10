@@ -50,7 +50,7 @@ external dependencies.
 Quick start:
 
 ```bash
-docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.5
+docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.6
 ```
 
 Then point any streamable-HTTP MCP host at `http://localhost:8765/mcp`
@@ -61,18 +61,18 @@ Override the upstream API base URL:
 ```bash
 docker run --rm -p 8765:8765 \
   -e SCOUTS_AI_BASE_URL=https://scouts-ai.com \
-  kecven/scouts-ai-mcp:0.1.5
+  kecven/scouts-ai-mcp:0.1.6
 ```
 
 Append CLI args (the image entrypoint is `scouts-ai-mcp`):
 
 ```bash
-docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.5 --log-level=DEBUG
+docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.6 --log-level=DEBUG
 ```
 
 Available tags:
 
-- `kecven/scouts-ai-mcp:0.1.5` — pinned, recommended for production.
+- `kecven/scouts-ai-mcp:0.1.6` — pinned, recommended for production.
 - `kecven/scouts-ai-mcp:0.1` — minor-version rolling tag.
 - `kecven/scouts-ai-mcp:latest` — latest stable release.
 
@@ -82,7 +82,7 @@ Build and push locally (requires `docker buildx`):
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   -f Dockerfile.hosted \
-  -t kecven/scouts-ai-mcp:0.1.5 \
+  -t kecven/scouts-ai-mcp:0.1.6 \
   -t kecven/scouts-ai-mcp:0.1 \
   -t kecven/scouts-ai-mcp:latest \
   --push .
@@ -140,7 +140,7 @@ All settings are environment variables. Defaults match the public SCOUTS-AI depl
 | -------------------------- | ------------------------ | ---------------------------------------- |
 | `SCOUTS_AI_BASE_URL`       | `https://scouts-ai.com`  | Base URL of the SCOUTS-AI API.           |
 | `SCOUTS_AI_TIMEOUT_S`      | `5.0`                    | HTTP timeout in seconds (0.1–60).        |
-| `SCOUTS_AI_USER_AGENT`     | `scouts-ai-mcp/0.1.5`    | User-Agent header.                       |
+| `SCOUTS_AI_USER_AGENT`     | `scouts-ai-mcp/0.1.6`    | User-Agent header.                       |
 | `SCOUTS_AI_DEFAULT_LANG`   | `en`                     | Default `lang` when the tool omits it.   |
 | `SCOUTS_AI_MAX_QUERY_LENGTH` | `512`                  | Reject queries longer than this.         |
 | `SCOUTS_AI_MAX_PAGE`       | `10`                     | Reject page numbers above this.          |

@@ -21,16 +21,22 @@ class Config:
     default_lang: str
     max_query_length: int
     max_page: int
+    # Optional shared secret sent on every upstream call as `X-Internal-Token`.
+    # Used by the in-stack SCOUTS-AI deployment to mark hosted-MCP traffic
+    # as trusted; empty = no header sent. Public MCP hosts (Claude Desktop
+    # etc.) leave this unset.
+    internal_token: str | None = None
 
     @staticmethod
     def from_env() -> "Config":
         return Config(
             base_url=_strip_trailing_slash(os.getenv("SCOUTS_AI_BASE_URL", "https://scouts-ai.com")),
             timeout_s=_float_env("SCOUTS_AI_TIMEOUT_S", 5.0, lo=0.1, hi=60.0),
-            user_agent=os.getenv("SCOUTS_AI_USER_AGENT", "scouts-ai-mcp/0.1.5"),
+            user_agent=os.getenv("SCOUTS_AI_USER_AGENT", "scouts-ai-mcp/0.1.6"),
             default_lang=os.getenv("SCOUTS_AI_DEFAULT_LANG", "en"),
             max_query_length=_int_env("SCOUTS_AI_MAX_QUERY_LENGTH", 512, lo=1, hi=4096),
             max_page=_int_env("SCOUTS_AI_MAX_PAGE", 10, lo=1, hi=100),
+            internal_token=os.getenv("SCOUTS_AI_INTERNAL_TOKEN") or None,
         )
 
 
