@@ -4,7 +4,7 @@ Model Context Protocol (MCP) server that exposes the [SCOUTS-AI](https://scouts-
 
 - **One tool, no API key.** Backed by `GET https://scouts-ai.com/api/search`.
 - **Drop-in for Claude Desktop, Cursor, Open WebUI, Continue, Cline** and any MCP host.
-- **Python ≥ 3.10**, `fastmcp` v2, `httpx`.
+- **Python ≥ 3.10**, `fastmcp` (`>=2.0`, currently resolves to 3.x), `httpx`.
 - **MIT licensed.**
 
 ## Install
@@ -50,7 +50,7 @@ external dependencies.
 Quick start:
 
 ```bash
-docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.6
+docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.7
 ```
 
 Then point any streamable-HTTP MCP host at `http://localhost:8765/mcp`
@@ -61,18 +61,18 @@ Override the upstream API base URL:
 ```bash
 docker run --rm -p 8765:8765 \
   -e SCOUTS_AI_BASE_URL=https://scouts-ai.com \
-  kecven/scouts-ai-mcp:0.1.6
+  kecven/scouts-ai-mcp:0.1.7
 ```
 
 Append CLI args (the image entrypoint is `scouts-ai-mcp`):
 
 ```bash
-docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.6 --log-level=DEBUG
+docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.7 --log-level=DEBUG
 ```
 
 Available tags:
 
-- `kecven/scouts-ai-mcp:0.1.6` — pinned, recommended for production.
+- `kecven/scouts-ai-mcp:0.1.7` — pinned, recommended for production.
 - `kecven/scouts-ai-mcp:0.1` — minor-version rolling tag.
 - `kecven/scouts-ai-mcp:latest` — latest stable release.
 
@@ -82,7 +82,7 @@ Build and push locally (requires `docker buildx`):
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   -f Dockerfile.hosted \
-  -t kecven/scouts-ai-mcp:0.1.6 \
+  -t kecven/scouts-ai-mcp:0.1.7 \
   -t kecven/scouts-ai-mcp:0.1 \
   -t kecven/scouts-ai-mcp:latest \
   --push .
@@ -99,7 +99,7 @@ unreliable).
 | --------- | ------ | ------- | -------------------------------------------- |
 | `query`   | string | —       | Search query, 1–512 chars.                   |
 | `lang`    | string | `en`    | BCP-47 language code (e.g. `en`, `en-US`).   |
-| `page`    | int    | `1`     | 1-based page number, 1–10.                   |
+| `page`    | int    | `1`     | 1-based page number, 1–10. `page=1` is the reliable default; pages `>1` may be empty for some queries because the upstream provider (Bing) does not always return additional pages. |
 
 Returns a compact JSON object mirroring the SCOUTS-AI response shape:
 
@@ -117,7 +117,7 @@ Returns a compact JSON object mirroring the SCOUTS-AI response shape:
       "url": "https://tokio.rs/",
       "content": "Tokio is an asynchronous runtime for the Rust programming language...",
       "publishedAt": "2025-11-14T00:00:00Z",
-      "engine": "duckduckgo"
+      "engine": "bing"
     }
   ]
 }
@@ -140,7 +140,7 @@ All settings are environment variables. Defaults match the public SCOUTS-AI depl
 | -------------------------- | ------------------------ | ---------------------------------------- |
 | `SCOUTS_AI_BASE_URL`       | `https://scouts-ai.com`  | Base URL of the SCOUTS-AI API.           |
 | `SCOUTS_AI_TIMEOUT_S`      | `5.0`                    | HTTP timeout in seconds (0.1–60).        |
-| `SCOUTS_AI_USER_AGENT`     | `scouts-ai-mcp/0.1.6`    | User-Agent header.                       |
+| `SCOUTS_AI_USER_AGENT`     | `scouts-ai-mcp/0.1.7`    | User-Agent header.                       |
 | `SCOUTS_AI_DEFAULT_LANG`   | `en`                     | Default `lang` when the tool omits it.   |
 | `SCOUTS_AI_MAX_QUERY_LENGTH` | `512`                  | Reject queries longer than this.         |
 | `SCOUTS_AI_MAX_PAGE`       | `10`                     | Reject page numbers above this.          |

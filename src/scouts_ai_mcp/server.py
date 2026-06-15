@@ -42,8 +42,11 @@ INSTRUCTIONS = (
     "(GET https://scouts-ai.com/api/search). No API key is required. "
     "Prefer results with a populated `publishedAt` field when the user asks "
     "about recent events, and use `url` values as citation candidates. "
-    "Respect rate limits: on 429, back off for the suggested `Retry-After` "
-    "seconds before retrying. Do not crawl or bulk-index the API."
+    "Stick to `page=1` (the default) unless the user explicitly asks for "
+    "more results: the upstream provider (Bing) often returns an empty list "
+    "for `page>1`, so additional pages are not a reliable way to widen the "
+    "result set. Respect rate limits: on 429, back off for the suggested "
+    "`Retry-After` seconds before retrying. Do not crawl or bulk-index the API."
 )
 
 
@@ -65,7 +68,9 @@ def build_server(client: ScoutsAiClient | None = None) -> FastMCP:
             "Search the public web via SCOUTS-AI and return compact JSON results. "
             "Use this when the user asks a question that requires current information, "
             "fresh context, or citations from the open web. No API key required. "
-            "Returns at most 10 results per page."
+            "Returns at most 10 results per page. "
+            "`page=1` is the reliable default; `page>1` may return an empty list "
+            "because the upstream provider does not always paginate."
         ),
     )
     def web_search(

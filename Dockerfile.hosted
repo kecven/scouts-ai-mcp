@@ -14,21 +14,21 @@
 #   docker buildx build \
 #     --platform linux/amd64,linux/arm64 \
 #     -f Dockerfile.hosted \
-#     -t kecven/scouts-ai-mcp:0.1.6 \
+#     -t kecven/scouts-ai-mcp:0.1.7 \
 #     -t kecven/scouts-ai-mcp:0.1 \
 #     -t kecven/scouts-ai-mcp:latest \
 #     --push .
 #
 # To run locally:
-#   docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.6
+#   docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.7
 #
 # To override the upstream API base URL:
 #   docker run --rm -p 8765:8765 \
 #     -e SCOUTS_AI_BASE_URL=https://scouts-ai.com \
-#     kecven/scouts-ai-mcp:0.1.6
+#     kecven/scouts-ai-mcp:0.1.7
 #
 # To override CLI args (the trailing args are appended to the ENTRYPOINT):
-#   docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.6 --log-level=DEBUG
+#   docker run --rm -p 8765:8765 kecven/scouts-ai-mcp:0.1.7 --log-level=DEBUG
 
 FROM python:3.11-slim-bookworm
 
@@ -37,7 +37,7 @@ FROM python:3.11-slim-bookworm
 # the real git SHA and build timestamp. The placeholders here are
 # intentional defaults that the CI / local build can override via
 # `--label=org.opencontainers.image.revision=<sha>`.
-ARG MCP_VERSION=0.1.6
+ARG MCP_VERSION=0.1.7
 ARG GIT_REVISION=unknown
 ARG BUILD_DATE=09.06.2026
 

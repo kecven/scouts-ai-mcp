@@ -1,7 +1,7 @@
 """Synchronous HTTP client for the SCOUTS-AI `/api/search` endpoint.
 
 Design notes:
-- Synchronous on purpose. fastmcp v2 tool functions are called from the MCP
+- Synchronous on purpose. fastmcp tool functions are called from the MCP
   event loop; the underlying httpx call is fast (one short JSON GET) and
   keeping the client sync avoids the cost and complexity of async/await
   plumbing for a single tool.
